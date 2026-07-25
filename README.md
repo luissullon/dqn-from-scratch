@@ -63,25 +63,25 @@ $$
 Define the **action-value function** `Q^π(s, a)` as the expected return starting from state `s`, taking action `a`, and then following policy `π`:
 
 $$
-Q^{\pi}(s, a) = \mathbb{E}_{\pi}\Big[\, G_t \;\Big|\; S_t = s,\, A_t = a \,\Big]
+Q^{\pi}(s, a) = \mathbb{E}_{\pi}\left[\, G_t \;\middle|\; S_t = s,\ A_t = a \,\right]
 $$
 
 The **optimal action-value function** is the best achievable `Q` over all policies:
 
 $$
-Q^*(s, a) = \max_{\pi} Q^{\pi}(s, a)
+Q^{*}(s, a) = \max_{\pi} Q^{\pi}(s, a)
 $$
 
 Bellman's key insight is that this optimal value function must satisfy a *recursive consistency condition*: the value of taking action `a` in state `s` optimally equals the immediate reward plus the discounted value of behaving optimally from the next state onward. This is the **Bellman optimality equation**:
 
 $$
-Q^*(s, a) = \mathbb{E}_{s' \sim P(\cdot \mid s, a)}\Big[\, R(s, a) + \gamma \max_{a'} Q^*(s', a') \,\Big]
+Q^{*}(s, a) = \mathbb{E}_{s' \sim P(\cdot \mid s, a)}\left[\, R(s, a) + \gamma \max_{a'} Q^{*}(s', a') \,\right]
 $$
 
 Intuitively: *the best you can do now is the reward you get immediately, plus the best you can do from wherever you land next.* This equation has a unique fixed-point solution `Q*`, and if we know `Q*`, the optimal policy is simply greedy with respect to it:
 
 $$
-\pi^*(s) = \arg\max_{a} Q^*(s, a)
+\pi^{*}(s) = \arg\max_{a} Q^{*}(s, a)
 $$
 
 This is what makes Q-learning attractive: we don't need to represent the policy explicitly at all — solving for `Q*` *is* solving the control problem.
@@ -90,15 +90,15 @@ This is what makes Q-learning attractive: we don't need to represent the policy 
 
 Tabular Q-learning (Watkins, 1989) turns the Bellman equation into an iterative update rule. After observing a transition `(s, a, r, s')`, nudge the current estimate `Q(s, a)` toward the **TD (temporal-difference) target**:
 
-{$$
+$$
 y = r + \gamma \max_{a'} Q(s', a')
-$$}
+$$
 
 using the update:
 
-{$$
-Q(s, a) \leftarrow Q(s, a) + \alpha \Big[\, y - Q(s, a) \,\Big]
-$$}
+$$
+Q(s, a) \leftarrow Q(s, a) + \alpha \left[\, y - Q(s, a) \,\right]
+$$
 
 where `α` is a learning rate and the bracketed quantity `y - Q(s, a)` is the **TD error**. Repeating this over many transitions provably converges to `Q*` for tabular state-action spaces under standard stochastic approximation conditions.
 
@@ -107,7 +107,7 @@ where `α` is a learning rate and the bracketed quantity `y - Q(s, a)` is the **
 DQN replaces the table `Q(s, a)` with a neural network `Q(s, a; θ)`. Instead of directly overwriting table entries, we minimize the squared TD error over sampled transitions — i.e., we treat the TD target as a regression label and take a gradient step:
 
 $$
-\mathcal{L}(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}\Big[\, \big(y - Q(s, a; \theta)\big)^2 \,\Big], \qquad y = r + \gamma \max_{a'} Q(s', a'; \theta^{-})
+\mathcal{L}(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}\left[\, \big(y - Q(s, a; \theta)\big)^2 \,\right], \qquad y = r + \gamma \max_{a'} Q(s', a'; \theta^{-})
 $$
 
 Two details distinguish this from naively regressing toward `y`:
@@ -130,7 +130,7 @@ The regression view above is deceptively simple — naively applying it online i
 The `max_{a'}` inside the Bellman target is a subtle problem: `Q(s', ·; θ⁻)` is a *noisy* estimate, and `max` of noisy estimates is a biased (upward) estimator of the true max — the network tends to systematically overestimate Q-values. **Double DQN** (van Hasselt et al., 2016) fixes this by decoupling *which* action is chosen from *how good* it's evaluated to be: use the **online** network to pick the best next action, and the **target** network to evaluate it.
 
 $$
-y_{\text{DoubleDQN}} = r + \gamma \, Q\Big(s', \; \underset{a'}{\arg\max}\, Q(s', a'; \theta); \; \theta^{-}\Big)
+y_{\text{DoubleDQN}} = r + \gamma \, Q\left(s', \ \underset{a'}{\arg\max}\, Q(s', a'; \theta);\ \theta^{-}\right)
 $$
 
 This project implements both variants — toggle with `Config.use_double_dqn` — see [`dqn/agent.py`](dqn/agent.py).
