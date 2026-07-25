@@ -75,13 +75,13 @@ $$
 Bellman's key insight is that this optimal value function must satisfy a *recursive consistency condition*: the value of taking action `a` in state `s` optimally equals the immediate reward plus the discounted value of behaving optimally from the next state onward. This is the **Bellman optimality equation**:
 
 $$
-Q^{*}(s, a) = \mathbb{E}_{s' \sim P(\cdot \mid s, a)}\left[\, R(s, a) + \gamma \max_{a'} Q^{*}(s', a') \,\right]
+Q^*(s, a) = \mathbb{E}_{s' \sim P(\cdot \mid s, a)}\left[ R(s, a) + \gamma \max_{a'} Q^*(s', a') \right]
 $$
 
 Intuitively: *the best you can do now is the reward you get immediately, plus the best you can do from wherever you land next.* This equation has a unique fixed-point solution `Q*`, and if we know `Q*`, the optimal policy is simply greedy with respect to it:
 
 $$
-\pi^{*}(s) = \arg\max_{a} Q^{*}(s, a)
+\pi^*(s) = \arg\max_{a} Q^*(s, a)
 $$
 
 This is what makes Q-learning attractive: we don't need to represent the policy explicitly at all — solving for `Q*` *is* solving the control problem.
