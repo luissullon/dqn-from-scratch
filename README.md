@@ -90,15 +90,15 @@ This is what makes Q-learning attractive: we don't need to represent the policy 
 
 Tabular Q-learning (Watkins, 1989) turns the Bellman equation into an iterative update rule. After observing a transition `(s, a, r, s')`, nudge the current estimate `Q(s, a)` toward the **TD (temporal-difference) target**:
 
-$$
+{$$
 y = r + \gamma \max_{a'} Q(s', a')
-$$
+$$}
 
 using the update:
 
-$$
+{$$
 Q(s, a) \leftarrow Q(s, a) + \alpha \Big[\, y - Q(s, a) \,\Big]
-$$
+$$}
 
 where `α` is a learning rate and the bracketed quantity `y - Q(s, a)` is the **TD error**. Repeating this over many transitions provably converges to `Q*` for tabular state-action spaces under standard stochastic approximation conditions.
 
